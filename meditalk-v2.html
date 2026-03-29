@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediTalk</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0f2744;
+  --navy2: #1a3a5c;
+  --teal: #0e7c6e;
+  --teal-light: #e6f4f2;
+  --amber: #e8913a;
+  --bg: #f2f5f9;
+  --surface: #ffffff;
+  --border: #dde3ec;
+  --text: #111827;
+  --text2: #4b5563;
+  --text3: #9ca3af;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif; background: var(--bg); color: var(--text); }
+
+/* ── LAYOUT ── */
+.app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+.screen { display: none; flex-direction: column; min-height: 100vh; animation: fadeIn 0.25s ease; }
+.screen.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ══════════════════════
+   SCREEN 1 — LANGUAGE
+══════════════════════ */
+#s-lang {
+  background: var(--navy);
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+.lang-deco {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  pointer-events: none;
+}
+.lang-deco.d1 { width: 320px; height: 320px; top: -80px; right: -80px; }
+.lang-deco.d2 { width: 200px; height: 200px; bottom: 60px; left: -60px; }
+.lang-deco.d3 { width: 100px; height: 100px; top: 200px; right: 40px; background: rgba(14,124,110,0.15); }
+
+.lang-top {
+  padding: 52px 28px 28px;
+  position: relative; z-index: 1;
+}
+.logo-mark {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 28px;
+}
+.logo-cross {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--teal);
+  display: grid; place-items: center;
+}
+.logo-cross svg { width: 20px; height: 20px; }
+.logo-text { font-size: 1.05rem; font-weight: 700; color: white; letter-spacing: 0.05em; }
+
+.lang-headline {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 2.2rem; font-weight: 700;
+  color: white; line-height: 1.15;
+  margin-bottom: 8px;
+}
+.lang-headline span { color: #7dd3c8; }
+.lang-sub { font-size: 0.82rem; color: rgba(255,255,255,0.4); font-weight: 300; letter-spacing: 0.04em; }
+
+.lang-list {
+  flex: 1; padding: 4px 20px 36px;
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; gap: 9px;
+  overflow-y: auto;
+}
+.lang-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 15px 18px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  animation: slideUp 0.4s ease both;
+}
+.lang-item:hover, .lang-item:active {
+  background: rgba(255,255,255,0.11);
+  border-color: rgba(14,124,110,0.5);
+  transform: translateX(3px);
+}
+.lang-item:nth-child(1) { animation-delay: 0.05s; }
+.lang-item:nth-child(2) { animation-delay: 0.1s; }
+.lang-item:nth-child(3) { animation-delay: 0.15s; }
+.lang-item:nth-child(4) { animation-delay: 0.2s; }
+.lang-item:nth-child(5) { animation-delay: 0.25s; }
+@keyframes slideUp { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
+
+.lang-flag { font-size: 1.9rem; line-height: 1; }
+.lang-names { flex: 1; }
+.lang-en { font-size: 1rem; font-weight: 600; color: white; }
+.lang-native { font-size: 0.78rem; color: rgba(255,255,255,0.4); margin-top: 1px; }
+.lang-chevron { color: rgba(255,255,255,0.25); font-size: 1rem; }
+
+/* ══════════════════════
+   SCREEN 2 — MAIN CATEGORY
+══════════════════════ */
+#s-main { background: var(--bg); }
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 18px;
+  display: flex; align-items: center; gap: 12px;
+  position: sticky; top: 0; z-index: 10;
+}
+.btn-back {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: white; cursor: pointer;
+  display: grid; place-items: center;
+  font-size: 0.95rem; color: var(--text2);
+  flex-shrink: 0; transition: all 0.15s;
+}
+.btn-back:hover { background: var(--bg); }
+.topbar-title { font-weight: 600; font-size: 1rem; color: var(--text); flex: 1; }
+.lang-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--navy); color: white;
+  border-radius: 20px; padding: 5px 12px;
+  font-size: 0.78rem; font-weight: 500; flex-shrink: 0;
+}
+
+.main-hero {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy2) 100%);
+  padding: 24px 22px 28px;
+}
+.main-hero-label {
+  font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4); margin-bottom: 6px;
+}
+.main-hero-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.5rem; color: white; font-weight: 700;
+}
+
+.main-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; padding: 18px;
+}
+.main-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex; flex-direction: column; align-items: flex-start;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.main-card:hover, .main-card:active {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  border-color: var(--teal);
+}
+.main-card.emergency {
+  background: var(--red-bg);
+  border-color: #fca5a5;
+  grid-column: 1 / -1;
+  flex-direction: row; align-items: center;
+  padding: 18px 20px;
+}
+.main-card.emergency:hover { border-color: var(--red); }
+
+.card-icon {
+  font-size: 1.8rem; margin-bottom: 12px; line-height: 1;
+}
+.main-card.emergency .card-icon { margin-bottom: 0; margin-right: 14px; font-size: 2rem; }
+.card-label {
+  font-weight: 600; font-size: 0.92rem; color: var(--text);
+  line-height: 1.3;
+}
+.main-card.emergency .card-label { color: var(--red); font-size: 1rem; }
+.card-count {
+  font-size: 0.72rem; color: var(--text3); margin-top: 4px;
+}
+.main-card.emergency .card-count { color: #ef4444; }
+.card-arrow { margin-left: auto; color: #ef4444; font-size: 1.1rem; }
+
+/* ══════════════════════
+   SCREEN 3 — SUB CATEGORY
+══════════════════════ */
+#s-sub { background: var(--bg); }
+
+.sub-hero {
+  padding: 20px 22px 22px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.sub-hero-icon { font-size: 2rem; margin-bottom: 6px; }
+.sub-hero-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 1.4rem; font-weight: 700; color: var(--text);
+}
+.sub-hero-desc { font-size: 0.8rem; color: var(--text3); margin-top: 4px; }
+
+.sub-list { padding: 14px; display: flex; flex-direction: column; gap: 9px; }
+
+.sub-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+.sub-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.07); }
+.sub-card.open { border-color: var(--teal); }
+
+.sub-card-head {
+  padding: 15px 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.sub-card-num {
+  width: 26px; height: 26px; border-radius: 8px;
+  background: var(--teal-light); color: var(--teal);
+  font-size: 0.72rem; font-weight: 700;
+  display: grid; place-items: center; flex-shrink: 0;
+}
+.sub-card.open .sub-card-num { background: var(--teal); color: white; }
+.sub-card-ko { flex: 1; font-weight: 500; font-size: 0.95rem; color: var(--text); }
+.sub-card-toggle {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--bg); display: grid; place-items: center;
+  font-size: 0.75rem; color: var(--text3); flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.sub-card.open .sub-card-toggle { transform: rotate(180deg); background: var(--teal-light); color: var(--teal); }
+
+.sub-card-body {
+  display: none;
+  border-top: 1px solid var(--border);
+  padding: 16px;
+}
+.sub-card.open .sub-card-body { display: block; }
+
+.translation-block { margin-bottom: 14px; }
+.translation-lang-label {
+  font-size: 0.68rem; font-weight: 600; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--text3); margin-bottom: 6px;
+}
+.translation-text {
+  font-size: 1.25rem; font-weight: 600; color: var(--navy);
+  line-height: 1.45;
+}
+.translation-text[dir="rtl"] { text-align: right; }
+
+.speak-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.btn-speak {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 16px;
+  background: var(--navy); color: white;
+  border: none; border-radius: 10px; cursor: pointer;
+  font-size: 0.82rem; font-weight: 500;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.btn-speak:hover { background: var(--navy2); }
+.btn-speak:active { transform: scale(0.96); }
+.btn-speak.speaking { background: var(--teal); }
+
+/* ══════════════════════
+   SCROLLBAR
+══════════════════════ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══════════════════ S1: LANGUAGE ═══════════════════ -->
+<div id="s-lang" class="screen active">
+  <div class="lang-deco d1"></div>
+  <div class="lang-deco d2"></div>
+  <div class="lang-deco d3"></div>
+  <div class="lang-top">
+    <div class="logo-mark">
+      <div class="logo-cross">
+        <svg viewBox="0 0 20 20" fill="none">
+          <path d="M10 2v16M2 10h16" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="logo-text">MEDITALK</span>
+    </div>
+    <div class="lang-headline">환자와<br><span>소통하세요</span></div>
+    <div class="lang-sub">언어를 선택해주세요 · Select your language</div>
+  </div>
+  <div class="lang-list">
+    <div class="lang-item" onclick="selectLang('en')">
+      <span class="lang-flag">🇺🇸</span>
+      <div class="lang-names"><div class="lang-en">English</div><div class="lang-native">영어</div></div>
+      <span class="lang-chevron">›</span>
+    </div>
+    <div class="lang-item" onclick="selectLang('zh')">
+      <span class="lang-flag">🇨🇳</span>
+      <div class="lang-names"><div class="lang-en">Chinese</div><div class="lang-native">中文</div></div>
+      <span class="lang-chevron">›</span>
+    </div>
+    <div class="lang-item" onclick="selectLang('ru')">
+      <span class="lang-flag">🇷🇺</span>
+      <div class="lang-names"><div class="lang-en">Russian</div><div class="lang-native">Русский</div></div>
+      <span class="lang-chevron">›</span>
+    </div>
+    <div class="lang-item" onclick="selectLang('ar')">
+      <span class="lang-flag">🇸🇦</span>
+      <div class="lang-names"><div class="lang-en">Arabic</div><div class="lang-native">العربية</div></div>
+      <span class="lang-chevron">›</span>
+    </div>
+    <div class="lang-item" onclick="selectLang('vi')">
+      <span class="lang-flag">🇻🇳</span>
+      <div class="lang-names"><div class="lang-en">Vietnamese</div><div class="lang-native">Tiếng Việt</div></div>
+      <span class="lang-chevron">›</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ S2: MAIN CATEGORY ═══════════════════ -->
+<div id="s-main" class="screen">
+  <div class="topbar">
+    <button class="btn-back" onclick="goTo('s-lang')">←</button>
+    <span class="topbar-title">카테고리 선택</span>
+    <div class="lang-chip">
+      <span id="chip-flag"></span>
+      <span id="chip-name"></span>
+    </div>
+  </div>
+  <div class="main-hero">
+    <div class="main-hero-label">MediTalk · 의료 소통 앱</div>
+    <div class="main-hero-title">어떤 상황인가요?</div>
+  </div>
+  <div class="main-grid" id="main-grid"></div>
+</div>
+
+<!-- ═══════════════════ S3: SUB CATEGORY ═══════════════════ -->
+<div id="s-sub" class="screen">
+  <div class="topbar">
+    <button class="btn-back" onclick="goTo('s-main')">←</button>
+    <span class="topbar-title" id="sub-topbar-title"></span>
+    <div class="lang-chip">
+      <span id="chip-flag2"></span>
+      <span id="chip-name2"></span>
+    </div>
+  </div>
+  <div class="sub-hero">
+    <div class="sub-hero-icon" id="sub-icon"></div>
+    <div class="sub-hero-title" id="sub-title"></div>
+    <div class="sub-hero-desc" id="sub-desc"></div>
+  </div>
+  <div class="sub-list" id="sub-list"></div>
+</div>
+
+</div><!-- .app -->
+
+<script>
+// ═══════════════════════════════════════
+//  LANGUAGE CONFIG
+// ═══════════════════════════════════════
+const LANGS = {
+  en: { name: 'English',   flag: '🇺🇸', bcp: 'en-US', dir: 'ltr' },
+  zh: { name: '中文',      flag: '🇨🇳', bcp: 'zh-CN', dir: 'ltr' },
+  ru: { name: 'Русский',   flag: '🇷🇺', bcp: 'ru-RU', dir: 'ltr' },
+  ar: { name: 'العربية',   flag: '🇸🇦', bcp: 'ar-SA', dir: 'rtl' },
+  vi: { name: 'Tiếng Việt',flag: '🇻🇳', bcp: 'vi-VN', dir: 'ltr' },
+};
+
+// ═══════════════════════════════════════
+//  DATA  (카테고리 → 문구)
+// ═══════════════════════════════════════
+const DATA = [
+  {
+    id: 'admission-info',
+    icon: '📋',
+    label: '입원정보조사',
+    desc: '입원 시 기본 정보를 수집합니다',
+    emergency: false,
+    phrases: [
+      {
+        ko: '왜 병원에 오게 됐나요?',
+        en: 'Why did you come to the hospital today?',
+        zh: '您今天为什么来医院？',
+        ru: 'Почему вы обратились в больницу сегодня?',
+        ar: 'لماذا أتيت إلى المستشفى اليوم؟',
+        vi: 'Tại sao bạn đến bệnh viện hôm nay?',
+      },
+      {
+        ko: '키와 몸무게를 알려주세요.',
+        en: 'Please tell me your height and weight.',
+        zh: '请告诉我您的身高和体重。',
+        ru: 'Пожалуйста, сообщите ваш рост и вес.',
+        ar: 'أخبرني بطولك ووزنك من فضلك.',
+        vi: 'Vui lòng cho tôi biết chiều cao và cân nặng của bạn.',
+      },
+      {
+        ko: '임신 전 체중은 몇 킬로그램인가요?',
+        en: 'What was your weight before pregnancy?',
+        zh: '您怀孕前的体重是多少公斤？',
+        ru: 'Каков был ваш вес до беременности?',
+        ar: 'ما كان وزنك قبل الحمل؟',
+        vi: 'Cân nặng của bạn trước khi mang thai là bao nhiêu kg?',
+      },
+      {
+        ko: '90일 내에 다른 병원에 입원한 적이 있나요?',
+        en: 'Have you been admitted to another hospital within the last 90 days?',
+        zh: '您在过去90天内曾在其他医院住院过吗？',
+        ru: 'Вы были госпитализированы в другую больницу за последние 90 дней?',
+        ar: 'هل تم إدخالك إلى مستشفى آخر خلال الـ 90 يوماً الماضية؟',
+        vi: 'Bạn có nhập viện tại bệnh viện khác trong vòng 90 ngày qua không?',
+      },
+    ],
+  },
+  {
+    id: 'pre-op',
+    icon: '🔪',
+    label: '수술전처치표',
+    desc: '수술 전 준비사항을 안내합니다',
+    emergency: false,
+    phrases: [
+      {
+        ko: '자정부터 금식하세요.',
+        en: 'Please do not eat or drink anything after midnight.',
+        zh: '请从午夜起禁食禁水。',
+        ru: 'Пожалуйста, не ешьте и не пейте после полуночи.',
+        ar: 'يرجى عدم تناول الطعام أو الشراب بعد منتصف الليل.',
+        vi: 'Vui lòng không ăn uống gì sau nửa đêm.',
+      },
+      {
+        ko: '흔들리는 치아, 교정기, 임플란트가 있나요?',
+        en: 'Do you have any loose teeth, braces, or dental implants?',
+        zh: '您有松动的牙齿、牙套或种植牙吗？',
+        ru: 'Есть ли у вас шатающиеся зубы, брекеты или зубные импланты?',
+        ar: 'هل لديك أسنان متحركة أو تقويم أسنان أو زراعات سنية؟',
+        vi: 'Bạn có răng lung lay, niềng răng, hoặc răng cấy ghép không?',
+      },
+      {
+        ko: '귀걸이, 목걸이, 반지 등 장신구를 제거하세요.',
+        en: 'Please remove all jewelry such as earrings, necklaces, and rings.',
+        zh: '请取下所有首饰，如耳环、项链和戒指。',
+        ru: 'Пожалуйста, снимите все украшения: серьги, ожерелья, кольца.',
+        ar: 'يرجى إزالة جميع المجوهرات مثل الأقراط والقلائد والخواتم.',
+        vi: 'Vui lòng tháo tất cả đồ trang sức như bông tai, vòng cổ và nhẫn.',
+      },
+      {
+        ko: '안경과 렌즈는 빼주세요.',
+        en: 'Please remove your glasses and contact lenses.',
+        zh: '请取下眼镜和隐形眼镜。',
+        ru: 'Пожалуйста, снимите очки и контактные линзы.',
+        ar: 'يرجى إزالة نظارتك والعدسات اللاصقة.',
+        vi: 'Vui lòng tháo kính và kính áp tròng.',
+      },
+      {
+        ko: '화장은 지워주세요.',
+        en: 'Please remove all makeup.',
+        zh: '请卸妆。',
+        ru: 'Пожалуйста, смойте макияж.',
+        ar: 'يرجى إزالة المكياج.',
+        vi: 'Vui lòng tẩy trang sạch.',
+      },
+      {
+        ko: '손톱 또는 발톱에 매니큐어가 있나요?',
+        en: 'Do you have nail polish on your fingers or toes?',
+        zh: '您的手指甲或脚趾甲上有指甲油吗？',
+        ru: 'На ваших ногтях есть лак?',
+        ar: 'هل لديك طلاء أظافر على أصابع يديك أو قدميك؟',
+        vi: 'Bạn có sơn móng tay hoặc móng chân không?',
+      },
+    ],
+  },
+  {
+    id: 'admission-explain',
+    icon: '🏥',
+    label: '입원시 설명',
+    desc: '입원 생활 안내사항입니다',
+    emergency: false,
+    phrases: [],
+  },
+  {
+    id: 'rounding',
+    icon: '🩺',
+    label: '라운딩시 질문',
+    desc: '회진 중 환자 상태를 확인합니다',
+    emergency: false,
+    phrases: [],
+  },
+  {
+    id: 'emergency',
+    icon: '🚨',
+    label: '응급실',
+    desc: '응급 상황 즉시 소통',
+    emergency: true,
+    phrases: [],
+  },
+];
+
+// ═══════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════
+let curLang = 'en';
+let curCat  = null;
+
+// ═══════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function selectLang(lang) {
+  curLang = lang;
+  const l = LANGS[lang];
+  ['chip-flag','chip-flag2'].forEach(id => document.getElementById(id).textContent = l.flag);
+  ['chip-name','chip-name2'].forEach(id => document.getElementById(id).textContent = l.name);
+  renderMainGrid();
+  goTo('s-main');
+}
+
+function openCat(id) {
+  curCat = DATA.find(d => d.id === id);
+  if (!curCat) return;
+  document.getElementById('sub-topbar-title').textContent = curCat.label;
+  document.getElementById('sub-icon').textContent  = curCat.icon;
+  document.getElementById('sub-title').textContent = curCat.label;
+  document.getElementById('sub-desc').textContent  = curCat.desc;
+  renderSubList();
+  goTo('s-sub');
+}
+
+// ═══════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════
+function renderMainGrid() {
+  const grid = document.getElementById('main-grid');
+  grid.innerHTML = DATA.map(cat => {
+    const count = cat.phrases.length;
+    const countTxt = count > 0 ? `${count}개 문구` : '준비 중';
+    if (cat.emergency) {
+      return `
+        <div class="main-card emergency" onclick="openCat('${cat.id}')">
+          <span class="card-icon">${cat.icon}</span>
+          <div>
+            <div class="card-label">${cat.label}</div>
+            <div class="card-count">${countTxt}</div>
+          </div>
+          <span class="card-arrow">›</span>
+        </div>`;
+    }
+    return `
+      <div class="main-card" onclick="openCat('${cat.id}')">
+        <span class="card-icon">${cat.icon}</span>
+        <div class="card-label">${cat.label}</div>
+        <div class="card-count">${countTxt}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderSubList() {
+  const list = document.getElementById('sub-list');
+  const phrases = curCat.phrases;
+  const lang = curLang;
+  const dir = LANGS[lang].dir;
+
+  if (phrases.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--text3);font-size:0.9rem;">
+      준비 중입니다 🛠️<br><span style="font-size:0.8rem;margin-top:6px;display:block;">곧 문구가 추가될 예정입니다</span>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = phrases.map((p, i) => `
+    <div class="sub-card" id="card-${i}">
+      <div class="sub-card-head" onclick="toggleCard(${i})">
+        <div class="sub-card-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="sub-card-ko">${p.ko}</div>
+        <div class="sub-card-toggle">▾</div>
+      </div>
+      <div class="sub-card-body">
+        <div class="translation-block">
+          <div class="translation-lang-label">${LANGS[lang].flag} ${LANGS[lang].name}</div>
+          <div class="translation-text" dir="${dir}">${p[lang] || ''}</div>
+        </div>
+        <div class="speak-row">
+          <button class="btn-speak" id="spk-${i}" onclick="speak(${i}, '${esc(p[lang]||'')}', '${lang}')">
+            🔊 소리로 듣기
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleCard(i) {
+  const card = document.getElementById('card-' + i);
+  const wasOpen = card.classList.contains('open');
+  document.querySelectorAll('.sub-card.open').forEach(c => c.classList.remove('open'));
+  if (!wasOpen) card.classList.add('open');
+}
+
+// ═══════════════════════════════════════
+//  TTS
+// ═══════════════════════════════════════
+function speak(i, text, lang) {
+  if (!window.speechSynthesis) { alert('이 브라우저는 음성을 지원하지 않습니다.'); return; }
+  window.speechSynthesis.cancel();
+  const btn = document.getElementById('spk-' + i);
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = LANGS[lang].bcp;
+  utt.rate = 0.88;
+  utt.onstart = () => { btn.classList.add('speaking'); btn.textContent = '🔊 재생 중...'; };
+  utt.onend   = () => { btn.classList.remove('speaking'); btn.textContent = '🔊 소리로 듣기'; };
+  window.speechSynthesis.speak(utt);
+}
+
+function esc(str) {
+  return str.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+}
+</script>
+</body>
+</html>
